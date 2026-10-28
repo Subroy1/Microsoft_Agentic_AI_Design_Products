@@ -242,15 +242,10 @@ This project is a practical demonstration of how a retrieval system can become m
 ---
 
 ## 13. Challenges Faced
-
-This section is intentionally kept for future documentation.
-
-### Challenges faced
-- Add details about the main design challenges encountered during implementation
-- Add issues related to routing accuracy
-- Add notes on retrieval quality and source selection
-- Add observations around latency, precision, or answer grounding
-- Add documentation of any tool integration issues or unresolved limitations
+-For bigger pdf documents , the chunking strategy fails as PDFSearchTool does not publicly expose any custom chunker size and tries to load the entire document at once causing RateLimitError. Hence enforced a manually crafter chunker to split the pdf first and add it iteratively into the vector store .
+- 
+- Many a times, the prompt needed refinement to avoid LLM timing out and returning with failed response , requiring clear and concise instructions for context aware responses from LLM. 
+- Latency for certain queries are in minutes for multi step reasoning tasks implying that agentic AI is not suited for latency sensitive real time applications.
 
 ---
 
@@ -260,10 +255,4 @@ This project showcases a multi-agent system for routing user queries to the corr
 
 It is a strong example of how agentic AI systems can be designed for practical business and research use cases where information comes from different modalities and sources.
 
----
 
-## 15. References
-
-- Course end project problem statement: `1763366029_course_end_project_problem_statement.pdf`
-- Main notebook: `router-retriever-multi_agent.ipynb`
-- Architecture image: `mag_orchestration_router_retriever.jpg`
