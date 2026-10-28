@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-This project demonstrates an agentic multi-tool retrieval system that routes user queries to the most appropriate information source before generating a final response. The system is designed to handle a mix of direct reasoning, live web retrieval, and PDF-grounded evidence, improving answer quality and reducing hallucinations.
+This project demonstrates an agentic multi-tool retrieval system that routes user queries to the most appropriate information source before generating a final response. The system is designed to handle a mix of general reasoning, current web information, and local document-grounded retrieval.
 
 - LLM_DIRECT: direct answer generation when the query can be answered from the model’s internal knowledge or a simple contextual prompt
 - WEB_SEARCH: retrieval of current or public information from the web when the answer depends on real-time or external content
@@ -217,13 +217,15 @@ Description:
 ### 11.3 Query Routed to PDF_SEARCH
 
 <p align="center">
-  <img src="./PDF_SEARCH_query.jpg" alt="PDF_SEARCH query screenshot" width="48%" />
-  <img src="./irrelevant_q_no_evidence_test.jpg" alt="PDF retrieval validation and no-evidence check screenshot" width="48%" />
+  <img src="./PDF_SEARCH_query.jpg" alt="PDF_SEARCH query screenshot" width="32%" />
+  <img src="./PDF_SEARCH_response.jpg" alt="PDF_SEARCH response screenshot" width="32%" />
+  <img src="./irrelevant_q_no_evidence_test.jpg" alt="PDF retrieval validation and no-evidence check screenshot" width="32%" />
 </p>
 
 Description:
 - The first image demonstrates a document-grounded query routed to the PDF search path.
-- The second image illustrates the router’s evidence-checking behavior for a non-relevant or unsupported query, helping prevent hallucinated or unsupported answers.
+- The second image shows the correct answer retrieved from the PDF and grounded in the document evidence.
+- The third image illustrates the router’s evidence-checking behavior for a non-relevant or unsupported query, helping prevent hallucinated or unsupported answers.
 
 ---
 
@@ -254,7 +256,7 @@ This section is intentionally kept for future documentation.
 
 ## 14. Summary
 
-This project showcases a multi-agent system for routing user queries to the correct knowledge source using an agentic design pattern. By combining direct LLM reasoning with web- and PDF-grounded retrieval, it demonstrates a robust way to build reliable AI systems for mixed-source information needs.
+This project showcases a multi-agent system for routing user queries to the correct knowledge source using an agentic design pattern. By combining direct LLM reasoning with web- and PDF-grounded retrieval, it demonstrates a practical and scalable approach to building answer engines that can reason across multiple information sources.
 
 It is a strong example of how agentic AI systems can be designed for practical business and research use cases where information comes from different modalities and sources.
 
