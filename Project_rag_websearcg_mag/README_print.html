@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Agent Router-Retriever for Web and PDF-Grounded Answers</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --heading: #111827;
+      --border: #e5e7eb;
+      --code-bg: #f3f4f6;
+      --accent: #2563eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      margin: 0;
+      background: var(--bg);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 40px 28px 60px;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--heading);
+      margin-top: 1.4em;
+      margin-bottom: 0.5em;
+      page-break-after: avoid;
+    }
+
+    h1 { font-size: 2.2rem; margin-top: 0; }
+    h2 { font-size: 1.6rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2em; }
+    h3 { font-size: 1.2rem; }
+
+    p, li {
+      font-size: 1.03rem;
+      margin: 0.5em 0;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+    }
+
+    code {
+      background: var(--code-bg);
+      padding: 0.15em 0.38em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1em;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: block;
+      margin: 0.7rem auto;
+      page-break-inside: avoid;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .gallery figure {
+      margin: 0;
+      text-align: center;
+    }
+
+    .gallery img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+    }
+
+    .note {
+      background: #f9fafb;
+      border-left: 4px solid var(--accent);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+
+    @page {
+      size: A4;
+      margin: 18mm 14mm;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .container {
+        padding-top: 0;
+      }
+      a {
+        color: #000;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Multi-Agent Router-Retriever for Web and PDF-Grounded Answers</h1>
+
+    <h2>1. Project Overview</h2>
+    <p>This project demonstrates an agentic multi-tool retrieval system that routes user queries to the most appropriate information source before generating a final response. The system is designed to handle multiple knowledge sources and select the most reliable one for each request.</p>
+    <ul>
+      <li><strong>LLM_DIRECT</strong>: direct answer generation when the query can be answered from the model’s internal knowledge or a simple contextual prompt</li>
+      <li><strong>WEB_SEARCH</strong>: retrieval of current or public information from the web when the answer depends on real-time or external content</li>
+      <li><strong>PDF_SEARCH</strong>: retrieval from domain-specific knowledge embedded in PDF documents or curated local knowledge bases</li>
+    </ul>
+    <p>The objective of this project is to design a robust routing architecture that improves answer quality, reduces hallucinations, and ensures the response is grounded in the most relevant and reliable sources available.</p>
+
+    <p>This repository contains the implementation and demonstration notebook for a router-retriever multi-agent workflow, with emphasis on:</p>
+    <ul>
+      <li>Intent classification</li>
+      <li>Tool routing</li>
+      <li>Retrieval from external web sources</li>
+      <li>Retrieval from local PDF content</li>
+      <li>Final response synthesis using an LLM</li>
+    </ul>
+
+    <h2>2. Problem Statement</h2>
+    <p>In many real-world enterprise and research scenarios, user questions do not fit into a single source of truth. Some questions require:</p>
+    <ul>
+      <li>a direct answer from general reasoning</li>
+      <li>current information from the web</li>
+      <li>structured domain knowledge stored in PDFs or internal documents</li>
+    </ul>
+    <p>A naive single-pipeline system often fails because it either:</p>
+    <ul>
+      <li>answers from stale or generic knowledge</li>
+      <li>retrieves irrelevant information</li>
+      <li>overuses web search when the answer exists in local documents</li>
+      <li>hallucinates when required information is missing from the chosen source</li>
+    </ul>
+    <p>This project addresses that challenge by building a multi-agent routing system that decides the correct mode of operation for each user query and then synthesizes the final answer using the best source available.</p>
+
+    <h2>3. Project Goal</h2>
+    <ol>
+      <li>Understand the user's intent</li>
+      <li>Route the question to the correct retrieval mode:
+        <ul>
+          <li>LLM_DIRECT</li>
+          <li>WEB_SEARCH</li>
+          <li>PDF_SEARCH</li>
+        </ul>
+      </li>
+      <li>Collect the relevant evidence</li>
+      <li>Combine the findings into a grounded answer</li>
+      <li>Return a clear and explainable final result</li>
+    </ol>
+
+    <h2>4. Solution Approach</h2>
+    <p>The system is implemented as a multi-agent architecture where a routing layer determines which tool or knowledge source should be used. The design works as follows:</p>
+    <ul>
+      <li>A user submits a query</li>
+      <li>The router evaluates whether the question is answerable directly by the LLM, better answered using live web information, or better answered using content from a PDF or internal knowledge source</li>
+      <li>The chosen tool executes retrieval or search</li>
+      <li>The retrieved information is passed back into the reasoning process</li>
+      <li>The final answer is generated with context and source awareness</li>
+    </ul>
+    <p>This approach improves answer quality by selecting the most relevant source instead of forcing a single retrieval method for all queries.</p>
+
+    <h2>5. Architecture</h2>
+    <p>The architecture below demonstrates the multi-agent orchestration and routing logic used in this project.</p>
+    <img src="./mag_orchestration_router_retriever.jpg" alt="Multi-Agent Orchestration Architecture" />
+
+    <h3>Core Components</h3>
+    <ul>
+      <li>User Query: the incoming question from the user</li>
+      <li>Router Agent: decides the best execution path</li>
+      <li>LLM_DIRECT: direct LLM reasoning path</li>
+      <li>Web Search Tool: for public and time-sensitive information</li>
+      <li>PDF Search Tool: for local document retrieval and knowledge grounding</li>
+      <li>Retrieval Layer: pulls relevant context from the selected source</li>
+      <li>Final Response Generator: synthesizes the answer with grounded evidence</li>
+    </ul>
+
+    <h3>Example Routing Logic</h3>
+    <ul>
+      <li>If the question is general and does not require recent information: route to LLM_DIRECT</li>
+      <li>If the query requires update-to-date news, facts, or current events: route to WEB_SEARCH</li>
+      <li>If the query depends on documentation, policy, PDF reports, or specialist content: route to PDF_SEARCH</li>
+    </ul>
+
+    <h2>6. Project Structure</h2>
+    <pre>Project_rag_websearcg_mag/
+├── router-retriever-multi_agent.ipynb
+├── mag_orchestration_router_retriever.jpg
+├── 1763366029_course_end_project_problem_statement.pdf
+└── README.md</pre>
+
+    <h3>Key File</h3>
+    <ul>
+      <li><code>router-retriever-multi_agent.ipynb</code>: the main notebook implementing the multi-agent router-retriever workflow</li>
+    </ul>
+
+    <h3>Supporting Asset</h3>
+    <ul>
+      <li><code>mag_orchestration_router_retriever.jpg</code>: architecture diagram for the system</li>
+      <li><code>1763366029_course_end_project_problem_statement.pdf</code>: course-end project problem statement</li>
+    </ul>
+
+    <h2>7. Workflow and Execution Flow</h2>
+    <ol>
+      <li>Query enters the system</li>
+      <li>Router decides the source path</li>
+      <li>Tool selection occurs based on query type</li>
+      <li>Relevant documents or search results are retrieved</li>
+      <li>The LLM reasons over the retrieved context</li>
+      <li>Final answer is formatted and returned to the user</li>
+    </ol>
+    <p>This pattern allows the system to handle mixed information needs more intelligently than a single-system retrieval chain.</p>
+
+    <h2>8. Tools and Technologies Used</h2>
+    <p>This project uses a modern agentic AI stack including:</p>
+    <ul>
+      <li>Python</li>
+      <li>Jupyter Notebook</li>
+      <li>LLM orchestration framework</li>
+      <li>Web search integration</li>
+      <li>PDF/document retrieval support</li>
+      <li>Retrieval-augmented generation (RAG) concepts</li>
+      <li>Multi-agent reasoning pipeline</li>
+    </ul>
+    <p>The implementation demonstrates how agentic tools can be composed to create a modular and explainable information retrieval system.</p>
+
+    <h2>9. Use Cases</h2>
+    <p>This architecture is useful for:</p>
+    <ul>
+      <li>Customer support assistants</li>
+      <li>Research and knowledge assistants</li>
+      <li>Internal document Q&A systems</li>
+      <li>Public information retrieval agents</li>
+      <li>Domain-aware enterprise workflows</li>
+      <li>RAG-based systems requiring tool routing</li>
+    </ul>
+    <p>It is especially effective when a system must answer queries from a mix of:</p>
+    <ul>
+      <li>general language model knowledge</li>
+      <li>real-time external knowledge</li>
+      <li>trusted local documentation</li>
+    </ul>
+
+    <h2>10. Example Query Scenarios</h2>
+
+    <h3>Example 1: Direct Answer</h3>
+    <p><strong>Query:</strong> "What is the difference between RAG and fine-tuning?"</p>
+    <p><strong>Expected route:</strong> LLM_DIRECT</p>
+
+    <h3>Example 2: Web Search</h3>
+    <p><strong>Query:</strong> "What is the latest AI regulation announcement from the government this week?"</p>
+    <p><strong>Expected route:</strong> WEB_SEARCH</p>
+
+    <h3>Example 3: PDF Search</h3>
+    <p><strong>Query:</strong> "According to the project PDF, what are the key requirements for the end-to-end solution?"</p>
+    <p><strong>Expected route:</strong> PDF_SEARCH</p>
+
+    <h2>11. Agent Task Screenshots and Examples</h2>
+    <p>The screenshots below show representative query/response pairs for each routing mode. Each pair captures the user input and the system’s decision path or result.</p>
+
+    <h3>11.1 Query Routed to LLM_DIRECT</h3>
+    <div class="gallery">
+      <figure>
+        <img src="./router_chooses_directllm_correctly_question_transformer.jpg" alt="LLM_DIRECT router decision screenshot" />
+      </figure>
+      <figure>
+        <img src="./direct_llm_transformer_query_response.jpg" alt="LLM_DIRECT response screenshot" />
+      </figure>
+    </div>
+    <p><strong>Description:</strong> The first image shows the router correctly classifying a general question for direct LLM reasoning. The second image shows the final answer generated without needing external retrieval.</p>
+
+    <h3>11.2 Query Routed to WEB_SEARCH</h3>
+    <div class="gallery">
+      <figure>
+        <img src="./current_news_query-tool_web_search.jpg" alt="WEB_SEARCH query screenshot" />
+      </figure>
+      <figure>
+        <img src="./current_news_response_tool_web_search.jpg" alt="WEB_SEARCH response screenshot" />
+      </figure>
+    </div>
+    <p><strong>Description:</strong> The first image shows the agent invoking the web search tool for a current-events question. The second image shows the grounded result returned from the live web search workflow.</p>
+
+    <h3>11.3 Query Routed to PDF_SEARCH</h3>
+    <div class="gallery">
+      <figure>
+        <img src="./PDF_SEARCH_query.jpg" alt="PDF_SEARCH query screenshot" />
+      </figure>
+      <figure>
+        <img src="./PDF_SEARCH_response.jpg" alt="PDF_SEARCH response screenshot" />
+      </figure>
+      <figure>
+        <img src="./irrelevant_q_no_evidence_test.jpg" alt="PDF retrieval validation and no-evidence check screenshot" />
+      </figure>
+    </div>
+    <p><strong>Description:</strong> The first image demonstrates a document-grounded query routed to the PDF search path. The second image shows the correct answer retrieved from the PDF and grounded in the document evidence. The third image illustrates the router’s evidence-checking behavior for a non-relevant or unsupported query, helping prevent hallucinated or unsupported answers.</p>
+
+    <h2>12. Expected Outcome</h2>
+    <p>The expected result of this project is a working multi-agent routing design that:</p>
+    <ul>
+      <li>improves answer relevance</li>
+      <li>minimizes unsupported or hallucinated responses</li>
+      <li>handles multiple information sources intelligently</li>
+      <li>provides a clear architecture for future expansion into production-grade agentic systems</li>
+    </ul>
+    <p>This project is a practical demonstration of how a retrieval system can become more reliable by routing based on the type of question asked.</p>
+
+    <h2>13. Challenges Faced</h2>
+    <ul>
+      <li>For bigger PDF documents, the chunking strategy fails as PDFSearchTool does not publicly expose any custom chunker size and tries to load the entire document at once causing RateLimitError.</li>
+      <li>Many a times, the prompt needed refinement to avoid LLM timing out and returning with failed response, requiring clear and concise instructions for context aware responses from the LLM.</li>
+      <li>Latency for certain queries are in minutes for multi-step reasoning tasks, implying that agentic AI is not suited for latency-sensitive real-time applications.</li>
+    </ul>
+
+    <h2>14. Summary</h2>
+    <p>This project showcases a multi-agent system for routing user queries to the correct knowledge source using an agentic design pattern. By combining direct LLM reasoning with web- and PDF-grounded retrieval, it demonstrates how AI workflows can handle heterogeneous information more effectively.</p>
+    <p>It is a strong example of how agentic AI systems can be designed for practical business and research use cases where information comes from different modalities and sources.</p>
+
+    <div class="note">
+      <strong>PDF export note:</strong> Open this HTML file in a browser and choose <em>Print</em> → <em>Save as PDF</em> to preserve all images and screenshots in the generated document.
+    </div>
+  </div>
+</body>
+</html>
