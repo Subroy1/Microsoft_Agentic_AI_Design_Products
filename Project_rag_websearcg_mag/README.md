@@ -242,8 +242,8 @@ This project is a practical demonstration of how a retrieval system can become m
 ---
 
 ## 13. Challenges Faced
+
 -For bigger pdf documents , the chunking strategy fails as PDFSearchTool does not publicly expose any custom chunker size and tries to load the entire document at once causing RateLimitError. Hence enforced a manually crafter chunker to split the pdf first and add it iteratively into the vector store .
-- 
 - Many a times, the prompt needed refinement to avoid LLM timing out and returning with failed response , requiring clear and concise instructions for context aware responses from LLM. 
 - Latency for certain queries are in minutes for multi step reasoning tasks implying that agentic AI is not suited for latency sensitive real time applications.
 
