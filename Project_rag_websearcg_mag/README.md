@@ -2,13 +2,13 @@
 
 ## 1. Project Overview
 
-This project demonstrates an agentic multi-tool retrieval system that routes user queries to the most appropriate information source before generating a final response. The system is designed to handle three distinct modes of query resolution:
+This project demonstrates an agentic multi-tool retrieval system that routes user queries to the most appropriate information source before generating a final response. The system is designed to handle a mix of direct reasoning, live web retrieval, and PDF-grounded evidence, improving answer quality and reducing hallucinations.
 
 - LLM_DIRECT: direct answer generation when the query can be answered from the model’s internal knowledge or a simple contextual prompt
 - WEB_SEARCH: retrieval of current or public information from the web when the answer depends on real-time or external content
 - PDF_SEARCH: retrieval from domain-specific knowledge embedded in PDF documents or curated local knowledge bases
 
-The objective of this project is to design a robust routing architecture that improves answer quality, reduces hallucinations, and ensures the response is grounded in the most relevant and reliable data source.
+The objective of this project is to design a robust routing architecture that improves answer quality, reduces hallucinations, and ensures the response is grounded in the most relevant and reliable source available.
 
 This repository contains the implementation and demonstration notebook for a router-retriever multi-agent workflow, with emphasis on:
 - Intent classification
@@ -32,7 +32,7 @@ A naive single-pipeline system often fails because it either:
 - overuses web search when the answer exists in local documents
 - hallucinates when required information is missing from the chosen source
 
-This project addresses that challenge by building a multi-agent routing system that decides the correct mode of operation for each user query and then synthesizes the final answer using the best source.
+This project addresses that challenge by building a multi-agent routing system that decides the correct mode of operation for each user query and then synthesizes the final answer using the best source available.
 
 ---
 
@@ -184,40 +184,46 @@ Expected route:
 
 ---
 
-## 11. Agent Task Screenshots and Placeholders
+## 11. Agent Task Screenshots and Examples
 
-The following sections are reserved for screenshots showing each query type and the corresponding tool invoked by the agentic system.
+The screenshots below show representative query/response pairs for each routing mode. Each pair captures the user input and the system’s decision path or result.
 
 ### 11.1 Query Routed to LLM_DIRECT
-Add screenshot here:
 
-![Screenshot Placeholder: LLM_DIRECT Query Execution](./screenshots/llm_direct_placeholder.png)
+<p align="center">
+  <img src="./router_chooses_directllm_correctly_question_transformer.jpg" alt="LLM_DIRECT router decision screenshot" width="48%" />
+  <img src="./direct_llm_transformer_query_response.jpg" alt="LLM_DIRECT response screenshot" width="48%" />
+</p>
 
 Description:
-- This screenshot demonstrates the agent selecting the LLM_DIRECT path for a general knowledge query
-- The system answers directly without needing web or PDF retrieval
+- The first image shows the router correctly classifying a general question for direct LLM reasoning.
+- The second image shows the final answer generated without needing external retrieval.
 
 ---
 
 ### 11.2 Query Routed to WEB_SEARCH
-Add screenshot here:
 
-![Screenshot Placeholder: WEB_SEARCH Query Execution](./screenshots/web_search_placeholder.png)
+<p align="center">
+  <img src="./current_news_query-tool_web_search.jpg" alt="WEB_SEARCH query screenshot" width="48%" />
+  <img src="./current_news_response_tool_web_search.jpg" alt="WEB_SEARCH response screenshot" width="48%" />
+</p>
 
 Description:
-- This screenshot demonstrates the agent invoking the web search tool for a current or external information query
-- The retrieved search results are used to ground the final answer
+- The first image shows the agent invoking the web search tool for a current-events question.
+- The second image shows the grounded result returned from the live web search workflow.
 
 ---
 
 ### 11.3 Query Routed to PDF_SEARCH
-Add screenshot here:
 
-![Screenshot Placeholder: PDF_SEARCH Query Execution](./screenshots/pdf_search_placeholder.png)
+<p align="center">
+  <img src="./PDF_SEARCH_query.jpg" alt="PDF_SEARCH query screenshot" width="48%" />
+  <img src="./irrelevant_q_no_evidence_test.jpg" alt="PDF retrieval validation and no-evidence check screenshot" width="48%" />
+</p>
 
 Description:
-- This screenshot demonstrates the agent invoking the PDF search tool for a document-grounded question
-- The retrieved PDF context is used to answer the query with source-based evidence
+- The first image demonstrates a document-grounded query routed to the PDF search path.
+- The second image illustrates the router’s evidence-checking behavior for a non-relevant or unsupported query, helping prevent hallucinated or unsupported answers.
 
 ---
 
@@ -248,7 +254,7 @@ This section is intentionally kept for future documentation.
 
 ## 14. Summary
 
-This project showcases a multi-agent system for routing user queries to the correct knowledge source using an agentic design pattern. By combining direct LLM reasoning with web- and PDF-grounded retrieval, the system becomes more flexible, reliable, and explainable.
+This project showcases a multi-agent system for routing user queries to the correct knowledge source using an agentic design pattern. By combining direct LLM reasoning with web- and PDF-grounded retrieval, it demonstrates a robust way to build reliable AI systems for mixed-source information needs.
 
 It is a strong example of how agentic AI systems can be designed for practical business and research use cases where information comes from different modalities and sources.
 
