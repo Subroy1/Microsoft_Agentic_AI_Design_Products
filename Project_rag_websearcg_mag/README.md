@@ -105,15 +105,6 @@ Project_rag_websearcg_mag/
 └── README.md
 ```
 
-### Key File
-- `router-retriever-multi_agent.ipynb`: the main notebook implementing the multi-agent router-retriever workflow
-
-### Supporting Asset
-- `mag_orchestration_router_retriever.jpg`: architecture diagram for the system
-- `1763366029_course_end_project_problem_statement.pdf`: course-end project problem statement
-
----
-
 ## 7. Workflow and Execution Flow
 
 The workflow follows a modular agentic pattern:
